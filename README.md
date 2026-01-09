@@ -201,8 +201,8 @@ Used only for presentation — raw data remains metric.
 
 ### Built‑in
 
-| Provider    | Status        | Notes               |
-| ----------- | ------------- | ------------------- |
+| Provider    | Status         | Notes               |
+| ----------- | -------------  | ------------------- |
 | Geoapify    | ✅ Implemented | Default provider    |
 | Google Maps | ⏳ Planned     | Drop‑in replacement |
 | Mapbox      | ⏳ Planned     | Drop‑in replacement |
