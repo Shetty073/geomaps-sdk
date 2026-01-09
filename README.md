@@ -470,7 +470,7 @@ For issues, questions, or suggestions:
 
 ## Want to help extend this project with other vendors or features?
 
-### Feel free to clone this project and add your bugfixes / enhancements by raising a pull request to the master branch.
+### Feel free to clone this project and add your bugfixes / enhancements by raising a pull request to the main branch.
 - Please ensure that your tets cases are passing and your code doesn't drift away from the code style of this repo.
 
 ---
