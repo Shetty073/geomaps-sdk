@@ -475,3 +475,5 @@ For issues, questions, or suggestions:
 
 ---
 **Made with ❤️ for developers who want clean, maintainable location services code.**
+
+[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
