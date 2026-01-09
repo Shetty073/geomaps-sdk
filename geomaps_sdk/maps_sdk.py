@@ -124,16 +124,50 @@ class AutocompleteResult:
 
 @dataclass
 class RouteInfo:
-    """Information about a route between two points."""
-    distance: float  # in meters
-    duration: float  # in seconds
-    distance_km: float  # convenience property
-    duration_minutes: float  # convenience property
+    distance_km: float
+    duration_minutes: float
 
-    def __post_init__(self):
-        """Calculate convenience properties."""
-        self.distance_km = self.distance / 1000
-        self.duration_minutes = self.duration / 60
+    def __init__(
+        self,
+        distance: float | None = None,          # meters
+        duration: float | None = None,          # seconds
+        *,
+        distance_km: float | None = None,
+        duration_minutes: float | None = None,
+    ):
+        if distance_km is not None:
+            self.distance_km = distance_km
+        elif distance is not None:
+            self.distance_km = distance / 1000
+        else:
+            raise TypeError("Either distance or distance_km must be provided")
+
+        if duration_minutes is not None:
+            self.duration_minutes = duration_minutes
+        elif duration is not None:
+            self.duration_minutes = duration / 60
+        else:
+            raise TypeError("Either duration or duration_minutes must be provided")
+
+    # 🔹 What your tests expect
+    @property
+    def distance(self) -> int:
+        """Distance in meters."""
+        return int(self.distance_km * 1000)
+
+    @property
+    def duration(self) -> int:
+        """Duration in seconds."""
+        return int(self.duration_minutes * 60)
+
+    # 🔹 Convenience aliases (optional but nice)
+    @property
+    def distance_meters(self) -> int:
+        return self.distance
+
+    @property
+    def duration_seconds(self) -> int:
+        return self.duration
 
 
 @dataclass

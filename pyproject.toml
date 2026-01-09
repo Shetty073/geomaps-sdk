@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geomaps_sdk"
+version = "1.0.0"
+description = "A flexible, extensible Python SDK for location-based services that abstracts away vendor-specific implementations."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+
+authors = [
+  { name = "Ashish Shetty", email = "shetty073@gmail.com" }
+]
+
+keywords = [
+  "maps",
+  "geocoding",
+  "geoapify",
+  "google-maps",
+  "mapbox",
+  "sdk"
+]
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+
+dependencies = [
+  "requests>=2.32,<3.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "bandit",
+  "build",
+  "twine",
+  "ruff",
+  "black"
+]
+
+[project.urls]
+Homepage = "https://github.com/Shetty073/geomaps-sdk"
+Repository = "https://github.com/Shetty073/geomaps-sdk"
+Issues = "https://github.com/Shetty073/geomaps-sdk/issues"
+
+[tool.setuptools.packages.find]
+exclude = ["tests*", "examples*", "venv*"]

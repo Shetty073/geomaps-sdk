@@ -317,16 +317,16 @@ client = LocationClient(provider=provider)
 ### Running Tests
 
 ```bash
-python -m pytest ./tests/tests.py -v
+python -m pytest ./tests/test_map_sdk.py -v
 # or
-python -m unittest ./tests/tests.py -v
+python -m unittest ./tests/test_map_sdk.py -v
 ```
 
 ### Test Coverage
 
 ```bash
 pip install coverage
-coverage run -m unittest ./tests/tests.py
+coverage run -m unittest ./tests/test_map_sdk.py
 coverage report -m
 coverage html  # generates htmlcov/index.html
 ```
@@ -452,7 +452,7 @@ MIT License - see LICENSE file
 
 For issues, questions, or suggestions:
 - Check the [examples.py](examples/examples.py) file for usage examples
-- Review the [tests.py](tests/tests.py) file for test patterns
+- Review the [test_map_sdk.py](tests/test_map_sdk.py) file for test patterns
 - Consult the Geoapify API documentation at https://apidocs.geoapify.com/
 
 ## Changelog
@@ -472,6 +472,14 @@ For issues, questions, or suggestions:
 
 ### Feel free to clone this project and add your bugfixes / enhancements by raising a pull request to the main branch.
 - Please ensure that your tets cases are passing and your code doesn't drift away from the code style of this repo.
+
+## Dev notes:
+
+- Build commands: 
+  - Test: pip install -e .[dev]
+  - Build: python -m build
+- Latest test case results:
+  - ![tests/results/1767989452191.png](45 passed)
 
 ---
 **Made with ❤️ for developers who want clean, maintainable location services code.**

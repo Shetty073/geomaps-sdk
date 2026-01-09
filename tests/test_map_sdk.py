@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import Mock, patch, MagicMock
 import json
 
-from ..maps_sdk import (
+from geomaps_sdk.maps_sdk import (
     LocationClient,
     BaseLocationProvider,
     GeoapifyProvider,
@@ -243,7 +243,7 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(ValidationError):
             GeoapifyProvider._validate_locations_list("not a list")
 
-    @patch('maps_sdk.requests.Session.get')
+    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
     def test_geocode_success(self, mock_get):
         """Test successful geocoding."""
         # Mock API response
@@ -276,7 +276,7 @@ class TestGeoapifyProvider(unittest.TestCase):
         self.assertEqual(results[0].location.longitude, -122.0841)
         self.assertEqual(results[0].confidence, 0.99)
 
-    @patch('maps_sdk.requests.Session.get')
+    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
     def test_geocode_no_results(self, mock_get):
         """Test geocoding with no results."""
         mock_response = Mock()
@@ -295,7 +295,7 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.provider.geocode(None)
 
-    @patch('maps_sdk.requests.Session.get')
+    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
     def test_reverse_geocode_success(self, mock_get):
         """Test successful reverse geocoding."""
         mock_response = Mock()
@@ -325,7 +325,7 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.provider.reverse_geocode(GeoPoint(latitude=91, longitude=0))
 
-    @patch('maps_sdk.requests.Session.get')
+    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
     def test_autocomplete_success(self, mock_get):
         """Test successful address autocomplete."""
         mock_response = Mock()
@@ -363,7 +363,7 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.provider.autocomplete("Query", limit=100)
 
-    @patch('maps_sdk.requests.Session.get')
+    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
     def test_authentication_error(self, mock_get):
         """Test API authentication error handling."""
         mock_response = Mock()
@@ -373,7 +373,7 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(AuthenticationError):
             self.provider.geocode("Test")
 
-    @patch('maps_sdk.requests.Session.get')
+    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
     def test_rate_limit_error(self, mock_get):
         """Test API rate limit error handling."""
         mock_response = Mock()
@@ -383,7 +383,7 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(RateLimitError):
             self.provider.geocode("Test")
 
-    @patch('maps_sdk.requests.Session.get')
+    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
     def test_api_error(self, mock_get):
         """Test API error handling."""
         mock_response = Mock()
@@ -394,7 +394,7 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(APIError):
             self.provider.geocode("Test")
 
-    @patch('maps_sdk.requests.Session.get')
+    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
     def test_timeout_error(self, mock_get):
         """Test timeout error handling."""
         from requests.exceptions import Timeout
@@ -403,7 +403,7 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(APIError):
             self.provider.geocode("Test")
 
-    @patch('maps_sdk.requests.Session.get')
+    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
     def test_distance_matrix_success(self, mock_get):
         """Test successful distance matrix calculation."""
         mock_response = Mock()

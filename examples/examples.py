@@ -4,7 +4,7 @@ Usage Examples for Location SDK
 This file demonstrates how to use the Location SDK for various use cases.
 """
 
-from ..maps_sdk import (
+from geomaps_sdk.maps_sdk import (
     LocationClient,
     GeoapifyProvider,
     GeoPoint,
