@@ -48,11 +48,27 @@ Your application code never talks to vendor APIs directly.
 
 * Python **3.9+**
 
-### Install (editable mode for development)
+### Install
+
+* using this repo's url
+
+```bash
+pip install git+https://github.com/Shetty073/geomaps-sdk.git@main
+```
+
+* editable mode for development and testing
 
 ```bash
 pip install -e .
 ```
+
+* actual build
+
+```bash
+python -m build
+```
+
+> Note: This package is not yet available on PyPI. Hence, for now it is recommended that you install this via the github url.
 
 Dependencies are declared in `pyproject.toml` and installed automatically.
 
