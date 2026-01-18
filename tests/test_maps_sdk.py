@@ -243,37 +243,73 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(ValidationError):
             GeoapifyProvider._validate_locations_list("not a list")
 
-    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
-    def test_geocode_success(self, mock_get):
+    @patch('geomaps_sdk.maps_sdk.GeoapifyProvider._make_request')
+    def test_geocode_success(self, mock_make_request):
         """Test successful geocoding."""
         # Mock API response
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            "features": [
+        mock_make_request.return_value = {
+            "results": [
                 {
-                    "properties": {
-                        "street": "Amphitheatre Parkway",
-                        "housenumber": "1600",
-                        "city": "Mountain View",
-                        "postcode": "94043",
-                        "country": "United States",
-                        "country_code": "us",
-                        "formatted": "1600 Amphitheatre Parkway, Mountain View, CA 94043",
-                        "rank": {"confidence": 0.99}
+                    'datasource': {
+                        'sourcename': 'openstreetmap',
+                        'attribution': '© OpenStreetMap contributors',
+                        'license': 'Open Database License',
+                        'url': 'https://www.openstreetmap.org/copyright'
                     },
-                    "geometry": {"coordinates": [-122.0841, 37.4220]}
+                    'country': 'Germany',
+                    'country_code': 'de',
+                    'state': 'Hesse',
+                    'county': 'Wetteraukreis',
+                    'city': 'Butzbach',
+                    'municipality': 'Butzbach',
+                    'postcode': '35510',
+                    'street': 'Gabelsberger Straße',
+                    'housenumber': '14',
+                    'iso3166_2': 'DE-HE',
+                    'lon': 8.661188482054381,
+                    'lat': 50.4334353,
+                    'state_code': 'HE',
+                    'result_type': 'building',
+                    'NUTS_3': 'DE71E',
+                    'formatted': 'Gabelsberger Straße 14, 35510 Butzbach, Germany',
+                    'address_line1': 'Gabelsberger Straße 14',
+                    'address_line2': '35510 Butzbach, Germany',
+                    'category': 'building',
+                    'timezone': {
+                        'name': 'Europe/Berlin',
+                        'offset_STD': '+01:00',
+                        'offset_STD_seconds': 3600,
+                        'offset_DST': '+02:00',
+                        'offset_DST_seconds': 7200,
+                        'abbreviation_STD': 'CET',
+                        'abbreviation_DST': 'CEST'
+                    },
+                    'plus_code': '9F2CCMM6+9F',
+                    'plus_code_short': 'M6+9F Butzbach, Wetteraukreis, Germany',
+                    'rank': {
+                        'importance': 9.99999999995449e-06,
+                        'confidence': 0.99,
+                        'confidence_street_level': 0.99,
+                        'confidence_building_level': 0.99,
+                        'match_type': 'full_match'
+                    },
+                    'place_id': '51b6d4f54b87522140594a37d3ce7a374940f00102f9016ac6680900000000c00203',
+                    'bbox': {
+                        'lon1': 8.6610684,
+                        'lat1': 50.4333647,
+                        'lon2': 8.6613094,
+                        'lat2': 50.433488
+                    }
                 }
             ]
         }
-        mock_get.return_value = mock_response
 
         # Test geocoding
         results = self.provider.geocode("Google HQ")
         
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].location.latitude, 37.4220)
-        self.assertEqual(results[0].location.longitude, -122.0841)
+        self.assertEqual(results[0].location.latitude, 50.4334353)
+        self.assertEqual(results[0].location.longitude, 8.661188482054381)
         self.assertEqual(results[0].confidence, 0.99)
 
     @patch('geomaps_sdk.maps_sdk.requests.Session.get')
@@ -295,62 +331,188 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.provider.geocode(None)
 
-    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
-    def test_reverse_geocode_success(self, mock_get):
+    @patch('geomaps_sdk.maps_sdk.GeoapifyProvider._make_request')
+    def test_reverse_geocode_success(self, mock_make_request):
         """Test successful reverse geocoding."""
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            "features": [
+        mock_make_request.return_value = {
+            "results": [
                 {
-                    "properties": {
-                        "street": "Amphitheatre Parkway",
-                        "city": "Mountain View",
-                        "country": "United States",
-                        "formatted": "1600 Amphitheatre Parkway, Mountain View, CA 94043",
+                    'datasource': {
+                        'sourcename': 'openstreetmap',
+                        'attribution': '© OpenStreetMap contributors',
+                        'license': 'Open Database License',
+                        'url': 'https://www.openstreetmap.org/copyright'
+                    },
+                    'country': 'Germany',
+                    'country_code': 'de',
+                    'state': 'Hesse',
+                    'county': 'Wetteraukreis',
+                    'city': 'Butzbach',
+                    'municipality': 'Butzbach',
+                    'postcode': '35510',
+                    'street': 'Gabelsberger Straße',
+                    'housenumber': '14',
+                    'iso3166_2': 'DE-HE',
+                    'lon': 8.661188482054381,
+                    'lat': 50.4334353,
+                    'state_code': 'HE',
+                    'result_type': 'building',
+                    'NUTS_3': 'DE71E',
+                    'formatted': 'Gabelsberger Straße 14, 35510 Butzbach, Germany',
+                    'address_line1': 'Gabelsberger Straße 14',
+                    'address_line2': '35510 Butzbach, Germany',
+                    'category': 'building',
+                    'timezone': {
+                        'name': 'Europe/Berlin',
+                        'offset_STD': '+01:00',
+                        'offset_STD_seconds': 3600,
+                        'offset_DST': '+02:00',
+                        'offset_DST_seconds': 7200,
+                        'abbreviation_STD': 'CET',
+                        'abbreviation_DST': 'CEST'
+                    },
+                    'plus_code': '9F2CCMM6+9F',
+                    'plus_code_short': 'M6+9F Butzbach, Wetteraukreis, Germany',
+                    'rank': {
+                        'importance': 9.99999999995449e-06,
+                        'confidence': 1,
+                        'confidence_street_level': 1,
+                        'confidence_building_level': 1,
+                        'match_type': 'full_match'
+                    },
+                    'place_id': '51b6d4f54b87522140594a37d3ce7a374940f00102f9016ac6680900000000c00203',
+                    'bbox': {
+                        'lon1': 8.6610684,
+                        'lat1': 50.4333647,
+                        'lon2': 8.6613094,
+                        'lat2': 50.433488
                     }
                 }
             ]
         }
-        mock_get.return_value = mock_response
 
         location = GeoPoint(latitude=37.4220, longitude=-122.0841)
         addresses = self.provider.reverse_geocode(location)
         
         self.assertEqual(len(addresses), 1)
-        self.assertEqual(addresses[0].city, "Mountain View")
+        self.assertEqual(addresses[0].address.city, "Butzbach")
 
     def test_reverse_geocode_invalid_location(self):
         """Test reverse geocoding with invalid location."""
         with self.assertRaises(ValidationError):
             self.provider.reverse_geocode(GeoPoint(latitude=91, longitude=0))
 
-    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
-    def test_autocomplete_success(self, mock_get):
+    @patch('geomaps_sdk.maps_sdk.GeoapifyProvider._make_request')
+    def test_autocomplete_success(self, mock_make_request):
         """Test successful address autocomplete."""
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            "features": [
+        mock_make_request.return_value = {
+            "results": [
                 {
-                    "properties": {
-                        "formatted": "Street 1, City",
-                        "street": "Street",
-                        "city": "City",
+                    'datasource': {
+                        'sourcename': 'openstreetmap',
+                        'attribution': '© OpenStreetMap contributors',
+                        'license': 'Open Database License',
+                        'url': 'https://www.openstreetmap.org/copyright'
                     },
-                    "geometry": {"coordinates": [0, 50]}
+                    'country': 'Germany',
+                    'country_code': 'de',
+                    'state': 'Hesse',
+                    'county': 'Wetteraukreis',
+                    'city': 'Butzbach',
+                    'municipality': 'Butzbach',
+                    'postcode': '35510',
+                    'street': 'Gabelsberger Straße',
+                    'housenumber': '14',
+                    'iso3166_2': 'DE-HE',
+                    'lon': 8.661188482054381,
+                    'lat': 50.4334353,
+                    'state_code': 'HE',
+                    'result_type': 'building',
+                    'NUTS_3': 'DE71E',
+                    'formatted': 'Gabelsberger Straße 14, 35510 Butzbach, Germany',
+                    'address_line1': 'Gabelsberger Straße 14',
+                    'address_line2': '35510 Butzbach, Germany',
+                    'category': 'building',
+                    'timezone': {
+                        'name': 'Europe/Berlin',
+                        'offset_STD': '+01:00',
+                        'offset_STD_seconds': 3600,
+                        'offset_DST': '+02:00',
+                        'offset_DST_seconds': 7200,
+                        'abbreviation_STD': 'CET',
+                        'abbreviation_DST': 'CEST'
+                    },
+                    'plus_code': '9F2CCMM6+9F',
+                    'plus_code_short': 'M6+9F Butzbach, Wetteraukreis, Germany',
+                    'rank': {
+                        'importance': 9.99999999995449e-06,
+                        'confidence': 1,
+                        'confidence_street_level': 1,
+                        'confidence_building_level': 1,
+                        'match_type': 'full_match'
+                    },
+                    'place_id': '51b6d4f54b87522140594a37d3ce7a374940f00102f9016ac6680900000000c00203',
+                    'bbox': {
+                        'lon1': 8.6610684,
+                        'lat1': 50.4333647,
+                        'lon2': 8.6613094,
+                        'lat2': 50.433488
+                    }
                 },
                 {
-                    "properties": {
-                        "formatted": "Street 2, City",
-                        "street": "Street",
-                        "city": "City",
+                    'datasource': {
+                        'sourcename': 'openstreetmap',
+                        'attribution': '© OpenStreetMap contributors',
+                        'license': 'Open Database License',
+                        'url': 'https://www.openstreetmap.org/copyright'
                     },
-                    "geometry": {"coordinates": [1, 51]}
+                    'country': 'Germany',
+                    'country_code': 'de',
+                    'state': 'Hesse',
+                    'county': 'Wetteraukreis',
+                    'city': 'Butzbach',
+                    'municipality': 'Butzbach',
+                    'postcode': '35510',
+                    'street': 'Gabelsberger Straße',
+                    'housenumber': '14',
+                    'iso3166_2': 'DE-HE',
+                    'lon': 8.661188482054381,
+                    'lat': 50.4334353,
+                    'state_code': 'HE',
+                    'result_type': 'building',
+                    'NUTS_3': 'DE71E',
+                    'formatted': 'Gabelsberger Straße 14, 35510 Butzbach, Germany',
+                    'address_line1': 'Gabelsberger Straße 14',
+                    'address_line2': '35510 Butzbach, Germany',
+                    'category': 'building',
+                    'timezone': {
+                        'name': 'Europe/Berlin',
+                        'offset_STD': '+01:00',
+                        'offset_STD_seconds': 3600,
+                        'offset_DST': '+02:00',
+                        'offset_DST_seconds': 7200,
+                        'abbreviation_STD': 'CET',
+                        'abbreviation_DST': 'CEST'
+                    },
+                    'plus_code': '9F2CCMM6+9F',
+                    'plus_code_short': 'M6+9F Butzbach, Wetteraukreis, Germany',
+                    'rank': {
+                        'importance': 9.99999999995449e-06,
+                        'confidence': 1,
+                        'confidence_street_level': 1,
+                        'confidence_building_level': 1,
+                        'match_type': 'full_match'
+                    },
+                    'place_id': '51b6d4f54b87522140594a37d3ce7a374940f00102f9016ac6680900000000c00203',
+                    'bbox': {
+                        'lon1': 8.6610684,
+                        'lat1': 50.4333647,
+                        'lon2': 8.6613094,
+                        'lat2': 50.433488
+                    }
                 }
             ]
         }
-        mock_get.return_value = mock_response
 
         results = self.provider.autocomplete("Street", limit=5)
         self.assertEqual(len(results), 2)
@@ -403,12 +565,11 @@ class TestGeoapifyProvider(unittest.TestCase):
         with self.assertRaises(APIError):
             self.provider.geocode("Test")
 
-    @patch('geomaps_sdk.maps_sdk.requests.Session.get')
-    def test_distance_matrix_success(self, mock_get):
+    @patch("geomaps_sdk.maps_sdk.GeoapifyProvider._make_request")
+    def test_distance_matrix_success(self, mock_make_request):
         """Test successful distance matrix calculation."""
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
+        
+        mock_make_request.return_value = {
             "sources_to_targets": [
                 [
                     {"distance": 50000, "time": 1800},
@@ -420,7 +581,6 @@ class TestGeoapifyProvider(unittest.TestCase):
                 ]
             ]
         }
-        mock_get.return_value = mock_response
 
         sources = [
             GeoPoint(latitude=37.7749, longitude=-122.4194),
@@ -522,7 +682,7 @@ class TestLocationClient(unittest.TestCase):
         route = self.client.route(source, target)
         
         self.provider.route.assert_called_once_with(
-            source, target, TravelMode.DRIVING
+            source, target, TravelMode.DRIVING, DistanceUnit.KILOMETERS
         )
         self.assertEqual(route, expected_route)
 
