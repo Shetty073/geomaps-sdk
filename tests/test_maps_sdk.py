@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import Mock, patch, MagicMock
 import json
 
-from geomaps_sdk.maps_sdk import (
+from geomaps_sdk import (
     LocationClient,
     BaseLocationProvider,
     GeoapifyProvider,
