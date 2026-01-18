@@ -121,6 +121,13 @@ class AutocompleteResult:
     location: GeoPoint
     raw_data: Optional[Dict[str, Any]] = None
 
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary representation."""
+        return {
+            "address": self.address.to_dict(),
+            "location": self.location.to_dict(),
+        }
+
 
 @dataclass
 class RouteInfo:
