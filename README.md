@@ -102,7 +102,7 @@ from geomaps_sdk import GeoPoint
 
 point = GeoPoint(37.4220, -122.0841)
 addresses = client.reverse_geocode(point)
-print(addresses[0].formatted_address)
+print(addresses[0].address.formatted_address)
 ```
 
 ### Routing

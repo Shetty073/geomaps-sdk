@@ -254,7 +254,7 @@ class BaseLocationProvider(ABC):
         pass
 
     @abstractmethod
-    def reverse_geocode(self, location: GeoPoint) -> List[Address]:
+    def reverse_geocode(self, location: GeoPoint) -> List[GeocodingResult]:
         """
         Convert geographic coordinates to address.
 
@@ -262,7 +262,7 @@ class BaseLocationProvider(ABC):
             location: Geographic point to reverse geocode
 
         Returns:
-            List of addresses for the given location
+            List of geocoding results (including addresses) for the given location
 
         Raises:
             APIError: If the API request fails
@@ -320,6 +320,7 @@ class BaseLocationProvider(ABC):
         source: GeoPoint,
         target: GeoPoint,
         mode: TravelMode = TravelMode.DRIVING,
+        units: DistanceUnit = DistanceUnit.KILOMETERS,
     ) -> RouteInfo:
         """
         Calculate route information between two points.
@@ -422,6 +423,61 @@ class GeoapifyProvider(BaseLocationProvider):
 
     BASE_URL = "https://api.geoapify.com/v1"
 
+    def _process_geocoding_results(self, response) -> List[GeocodingResult]:
+        results = []
+
+        for result in response.get("results", []):
+            location = GeoPoint(latitude=result.get("lat"), longitude=result.get("lon"))
+            address = Address(
+                street=result.get("street"),
+                house_number=result.get("housenumber"),
+                city=result.get("city"),
+                postcode=result.get("postcode"),
+                country=result.get("country"),
+                country_code=result.get("country_code"),
+                state=result.get("state"),
+                formatted_address=result.get("formatted"),
+            )
+
+            rank = result.get("rank", {})
+            geo_result = GeocodingResult(
+                location=location,
+                address=address,
+                confidence=rank.get("confidence"),
+                confidence_building_level=rank.get("confidence_building_level"),
+                confidence_street_level=rank.get("confidence_street_level"),
+                confidence_city_level=rank.get("confidence_city_level"),
+                raw_data=result,
+            )
+            results.append(geo_result)
+
+        return results
+
+    def _process_autocomplete_results(self, response) -> List[AutocompleteResult]:
+        results = []
+
+        for result in response.get("results", []):
+            location = GeoPoint(latitude=result.get("lat"), longitude=result.get("lon"))
+            address = Address(
+                street=result.get("street"),
+                house_number=result.get("housenumber"),
+                city=result.get("city"),
+                postcode=result.get("postcode"),
+                country=result.get("country"),
+                country_code=result.get("country_code"),
+                state=result.get("state"),
+                formatted_address=result.get("formatted"),
+            )
+
+            geo_result = AutocompleteResult(
+                location=location,
+                address=address,
+                raw_data=result,
+            )
+            results.append(geo_result)
+
+        return results
+
     def geocode(self, query: str) -> List[GeocodingResult]:
         """
         Convert address text to geographic coordinates using Geoapify.
@@ -447,41 +503,9 @@ class GeoapifyProvider(BaseLocationProvider):
         }
 
         response = self._make_request(url, params=params)
-        results = []
+        return self._process_geocoding_results(response)
 
-        if "features" in response:
-            for feature in response["features"]:
-                props = feature.get("properties", {})
-                coords = feature.get("geometry", {}).get("coordinates", [])
-
-                if coords and len(coords) >= 2:
-                    location = GeoPoint(latitude=coords[1], longitude=coords[0])
-                    address = Address(
-                        street=props.get("street"),
-                        house_number=props.get("housenumber"),
-                        city=props.get("city"),
-                        postcode=props.get("postcode"),
-                        country=props.get("country"),
-                        country_code=props.get("country_code"),
-                        state=props.get("state"),
-                        formatted_address=props.get("formatted"),
-                    )
-
-                    rank = props.get("rank", {})
-                    result = GeocodingResult(
-                        location=location,
-                        address=address,
-                        confidence=rank.get("confidence"),
-                        confidence_building_level=rank.get("confidence_building_level"),
-                        confidence_street_level=rank.get("confidence_street_level"),
-                        confidence_city_level=rank.get("confidence_city_level"),
-                        raw_data=feature,
-                    )
-                    results.append(result)
-
-        return results
-
-    def reverse_geocode(self, location: GeoPoint) -> List[Address]:
+    def reverse_geocode(self, location: GeoPoint) -> List[GeocodingResult]:
         """
         Convert geographic coordinates to address using Geoapify.
 
@@ -489,7 +513,7 @@ class GeoapifyProvider(BaseLocationProvider):
             location: Geographic point to reverse geocode
 
         Returns:
-            List of addresses for the given location
+            List of geocoding results containing addresses for the given location
 
         Raises:
             APIError: If the API request fails
@@ -506,24 +530,7 @@ class GeoapifyProvider(BaseLocationProvider):
         }
 
         response = self._make_request(url, params=params)
-        addresses = []
-
-        if "features" in response:
-            for feature in response["features"]:
-                props = feature.get("properties", {})
-                address = Address(
-                    street=props.get("street"),
-                    house_number=props.get("housenumber"),
-                    city=props.get("city"),
-                    postcode=props.get("postcode"),
-                    country=props.get("country"),
-                    country_code=props.get("country_code"),
-                    state=props.get("state"),
-                    formatted_address=props.get("formatted"),
-                )
-                addresses.append(address)
-
-        return addresses
+        return self._process_geocoding_results(response)
 
     def autocomplete(self, query: str, limit: int = 5) -> List[AutocompleteResult]:
         """
@@ -555,34 +562,7 @@ class GeoapifyProvider(BaseLocationProvider):
         }
 
         response = self._make_request(url, params=params)
-        results = []
-
-        if "features" in response:
-            for feature in response["features"]:
-                props = feature.get("properties", {})
-                coords = feature.get("geometry", {}).get("coordinates", [])
-
-                if coords and len(coords) >= 2:
-                    location = GeoPoint(latitude=coords[1], longitude=coords[0])
-                    address = Address(
-                        street=props.get("street"),
-                        house_number=props.get("housenumber"),
-                        city=props.get("city"),
-                        postcode=props.get("postcode"),
-                        country=props.get("country"),
-                        country_code=props.get("country_code"),
-                        state=props.get("state"),
-                        formatted_address=props.get("formatted"),
-                    )
-
-                    result = AutocompleteResult(
-                        address=address,
-                        location=location,
-                        raw_data=feature,
-                    )
-                    results.append(result)
-
-        return results
+        return self._process_autocomplete_results(response)
 
     def distance_matrix(
         self,
@@ -615,18 +595,22 @@ class GeoapifyProvider(BaseLocationProvider):
 
         url = f"{self.BASE_URL}/routematrix"
 
-        # Format locations
-        sources_str = "|".join([f"{loc.latitude},{loc.longitude}" for loc in sources])
-        targets_str = "|".join([f"{loc.latitude},{loc.longitude}" for loc in targets])
-
         params = {
-            "sources": sources_str,
-            "targets": targets_str,
             "apiKey": self.api_key,
         }
 
-        response = self._make_request(url, params=params)
-        
+        units = "metric" if units in [DistanceUnit.KILOMETERS, DistanceUnit.METERS] else "imperial",
+
+        data = {
+            "mode": mode.value,
+            "sources": [{"location": [loc.latitude, loc.longitude]} for loc in sources],
+            "targets": [{"location": [loc.latitude, loc.longitude]} for loc in targets],
+            "units": units,
+            "traffic": "approximated"
+        }
+
+        response = self._make_request(url, method="POST", params=params, data=data)
+
         # Parse distance matrix from response
         distances = []
         durations = []
@@ -646,7 +630,7 @@ class GeoapifyProvider(BaseLocationProvider):
         return DistanceMatrixResult(
             distances=distances,
             durations=durations,
-            unit="metric",
+            unit=units,
             sources=sources,
             targets=targets,
         )
@@ -656,6 +640,7 @@ class GeoapifyProvider(BaseLocationProvider):
         source: GeoPoint,
         target: GeoPoint,
         mode: TravelMode = TravelMode.DRIVING,
+        units: DistanceUnit = DistanceUnit.KILOMETERS,
     ) -> RouteInfo:
         """
         Calculate route information between two points using Geoapify.
@@ -676,11 +661,17 @@ class GeoapifyProvider(BaseLocationProvider):
         self._validate_location(target, "target")
 
         url = f"{self.BASE_URL}/routing"
+
+        waypoints = f"{source.latitude},{source.longitude}|{target.latitude},{target.longitude}"
+
+        units = "metric" if units in [DistanceUnit.KILOMETERS, DistanceUnit.METERS] else "imperial",
+
         params = {
-            "from": f"{source.latitude},{source.longitude}",
-            "to": f"{target.latitude},{target.longitude}",
+            "waypoints": waypoints,
             "mode": mode.value,
             "apiKey": self.api_key,
+            "units": units,
+            "traffic": "approximated"
         }
 
         response = self._make_request(url, params=params)
@@ -772,7 +763,7 @@ class LocationClient:
         """
         return self.provider.geocode(query)
 
-    def reverse_geocode(self, location: GeoPoint) -> List[Address]:
+    def reverse_geocode(self, location: GeoPoint) -> List[GeocodingResult]:
         """
         Convert geographic coordinates to address.
 
@@ -780,7 +771,7 @@ class LocationClient:
             location: Geographic point to reverse geocode
 
         Returns:
-            List of addresses
+            List of geocoding results containing addresses
         """
         return self.provider.reverse_geocode(location)
 
@@ -823,6 +814,7 @@ class LocationClient:
         source: GeoPoint,
         target: GeoPoint,
         mode: TravelMode = TravelMode.DRIVING,
+        units: DistanceUnit = DistanceUnit.KILOMETERS,
     ) -> RouteInfo:
         """
         Calculate route between two points.
@@ -835,7 +827,7 @@ class LocationClient:
         Returns:
             Route information
         """
-        return self.provider.route(source, target, mode)
+        return self.provider.route(source, target, mode, units)
 
     def close(self):
         """Close the client and clean up resources."""

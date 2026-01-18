@@ -4,7 +4,7 @@ Usage Examples for Location SDK
 This file demonstrates how to use the Location SDK for various use cases.
 """
 
-from geomaps_sdk.maps_sdk import (
+from geomaps_sdk import (
     LocationClient,
     GeoapifyProvider,
     GeoPoint,
@@ -16,6 +16,7 @@ from geomaps_sdk.maps_sdk import (
     AuthenticationError,
 )
 
+YOUR_API_KEY = "YOUR_API_KEY_HERE"
 
 # ============================================================================
 # Example 1: Basic Geocoding
@@ -23,7 +24,7 @@ from geomaps_sdk.maps_sdk import (
 
 def example_basic_geocoding():
     """Convert an address to coordinates."""
-    api_key = "YOUR_GEOAPIFY_API_KEY"
+    api_key = YOUR_API_KEY
     
     # Initialize client with Geoapify provider
     client = LocationClient(provider=GeoapifyProvider(api_key=api_key))
@@ -54,7 +55,7 @@ def example_basic_geocoding():
 
 def example_reverse_geocoding():
     """Convert coordinates to an address."""
-    api_key = "YOUR_GEOAPIFY_API_KEY"
+    api_key = YOUR_API_KEY
     
     with LocationClient(provider=GeoapifyProvider(api_key=api_key)) as client:
         try:
@@ -65,8 +66,8 @@ def example_reverse_geocoding():
             addresses = client.reverse_geocode(location)
             
             for addr in addresses:
-                print(f"Address: {addr.formatted_address}")
-                print(f"City: {addr.city}, Country: {addr.country}")
+                print(f"Address: {addr.address.formatted_address}")
+                print(f"City: {addr.address.city}, Country: {addr.address.country}")
         
         except APIError as e:
             print(f"API Error: {e}")
@@ -78,7 +79,7 @@ def example_reverse_geocoding():
 
 def example_address_autocomplete():
     """Get address suggestions as user types."""
-    api_key = "YOUR_GEOAPIFY_API_KEY"
+    api_key = YOUR_API_KEY
     
     with LocationClient(provider=GeoapifyProvider(api_key=api_key)) as client:
         try:
@@ -101,19 +102,19 @@ def example_address_autocomplete():
 
 def example_distance_matrix():
     """Calculate distances between multiple locations."""
-    api_key = "YOUR_GEOAPIFY_API_KEY"
+    api_key = YOUR_API_KEY
     
     with LocationClient(provider=GeoapifyProvider(api_key=api_key)) as client:
         try:
             # Define source and target locations
             sources = [
-                GeoPoint(latitude=37.4220, longitude=-122.0841),  # Google HQ
-                GeoPoint(latitude=37.3382, longitude=-121.8863),  # San Jose
+                GeoPoint(latitude=72.99109999023267, longitude=19.185709008141103),
+                # GeoPoint(latitude=33.8156591, longitude=-118.3706662),
             ]
             
             targets = [
-                GeoPoint(latitude=34.0522, longitude=-118.2437),  # Los Angeles
-                GeoPoint(latitude=39.7392, longitude=-104.9903),  # Denver
+                GeoPoint(latitude=73.87826137337902, longitude=18.596783952886653),
+                # GeoPoint(latitude=39.7612182, longitude=-104.7553254),
             ]
             
             # Calculate distance matrix
@@ -126,7 +127,7 @@ def example_distance_matrix():
             
             # Display results
             print("Distance Matrix (in kilometers) and Duration (in minutes):")
-            print("\nFrom\\To            | LA       | Denver")
+            print("\nFrom\\To            |        |         ")
             print("-------------------+----------+----------")
             
             for i, source in enumerate(sources):
@@ -149,7 +150,7 @@ def example_distance_matrix():
 
 def example_route_info():
     """Get route information between two points."""
-    api_key = "YOUR_GEOAPIFY_API_KEY"
+    api_key = YOUR_API_KEY
     
     with LocationClient(provider=GeoapifyProvider(api_key=api_key)) as client:
         try:
@@ -177,7 +178,7 @@ def example_route_info():
 
 def example_different_travel_modes():
     """Calculate distances for different travel modes."""
-    api_key = "YOUR_GEOAPIFY_API_KEY"
+    api_key = YOUR_API_KEY
     
     with LocationClient(provider=GeoapifyProvider(api_key=api_key)) as client:
         try:
@@ -209,7 +210,7 @@ def example_different_travel_modes():
 
 def example_error_handling():
     """Demonstrate proper error handling."""
-    api_key = "INVALID_API_KEY"
+    api_key = YOUR_API_KEY
     
     try:
         client = LocationClient(provider=GeoapifyProvider(api_key=api_key))
@@ -233,7 +234,7 @@ def example_error_handling():
 
 def example_address_validation():
     """Find and validate addresses before use."""
-    api_key = "YOUR_GEOAPIFY_API_KEY"
+    api_key = YOUR_API_KEY
     
     with LocationClient(provider=GeoapifyProvider(api_key=api_key)) as client:
         try:
@@ -265,7 +266,7 @@ def example_address_validation():
 
 def example_batch_geocoding():
     """Geocode multiple addresses."""
-    api_key = "YOUR_GEOAPIFY_API_KEY"
+    api_key = YOUR_API_KEY
     
     addresses = [
         "1600 Amphitheatre Parkway, Mountain View, CA",
@@ -297,7 +298,7 @@ def example_batch_geocoding():
 
 def example_context_manager():
     """Use LocationClient with context manager for automatic cleanup."""
-    api_key = "YOUR_GEOAPIFY_API_KEY"
+    api_key = YOUR_API_KEY
     
     # Recommended approach - automatic cleanup
     with LocationClient(provider=GeoapifyProvider(api_key=api_key)) as client:
