@@ -56,6 +56,14 @@ Your application code never talks to vendor APIs directly.
 pip install git+https://github.com/Shetty073/geomaps-sdk.git@main
 ```
 
+```bash
+pip install git+https://github.com/Shetty073/geomaps-sdk.git@v<<TAG>>
+
+# for example
+pip install git+https://github.com/Shetty073/geomaps-sdk.git@v0.0.1
+
+```
+
 * editable mode for development and testing
 
 ```bash
